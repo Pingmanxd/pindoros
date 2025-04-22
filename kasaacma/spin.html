@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Point Kazan | Kasa Aç</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Pindoro</div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-page="home">Ana Sayfa</a></li>
+                    <li><a href="#" class="nav-link" data-page="cases">Kasalar</a></li>
+                    <li><a href="#" class="nav-link" data-page="balance">Bakiye Yükle</a></li>
+                    <li><span id="balanceLink">Bakiye: 0 VP</span></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app-content">
+        <!-- Dinamik içerik buraya yüklenecek -->
+    </main>
+
+    <!-- Kasa Açma Modalı -->
+    <div id="caseModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Kasa Açılıyor...</h2>
+            <div class="case-opening-animation">
+                <div class="items-container"></div>
+                <div class="won-item">
+                    <h3 id="wonAmount">0 VP</h3>
+                    <button id="claimBtn" class="btn">Ödülü Al</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <div class="payment-methods">
+    <div class="payment-option" id="papara100vp">
+        <img src="img/papara-logo.png" alt="Papara">
+        <div class="payment-info">
+            <h3>100 VP</h3>
+            <p>10.00 TL</p>
+        </div>
+    </div>
+    
+    <div class="payment-option" id="papara250vp">
+        <img src="img/papara-logo.png" alt="Papara">
+        <div class="payment-info">
+            <h3>250 VP</h3>
+            <p>22.50 TL</p>
+        </div>
+    </div>
+</div>
+
+<div id="tcKimlikModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>TC Kimlik No Doğrulama</h2>
+        <input type="text" id="tcKimlikNo" placeholder="TC Kimlik Numaranız">
+        <button id="confirmTcNo" class="btn">Onayla</button>
+    </div>
+</div>
+</body>
+</html>

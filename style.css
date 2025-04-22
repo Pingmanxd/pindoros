@@ -1,0 +1,380 @@
+/* style.css */
+
+/* Genel Stiller */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #0f1923;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Valorant Temalı Arka Plan Animasyonu */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #ff4655, #0f1923, #0f1923, #ff4655);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -2;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Valorant Logo Efekti */
+body::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/1200px-Valorant_logo_-_pink_color_version.svg.png') no-repeat center center;
+    background-size: contain;
+    opacity: 0.05;
+    z-index: -1;
+    animation: pulse 6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.05;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.08;
+    }
+}
+
+/* Modal Stilleri */
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 25, 35, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #1a2a3a;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(255, 70, 85, 0.3);
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    animation: modalFadeIn 0.5s ease-out;
+    border: 1px solid #2a3a4a;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Kapatma Butonu */
+.close-auth {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-auth:hover {
+    color: #ff4655;
+}
+
+/* Form Başlıkları */
+.auth-form h2 {
+    font-family: 'Anton', sans-serif;
+    color: #ff4655;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 28px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Form Grupları */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ece8e1;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #2a3a4a;
+    border-radius: 4px;
+    background-color: #0f1923;
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ff4655;
+    box-shadow: 0 0 0 2px rgba(255, 70, 85, 0.2);
+}
+
+/* Butonlar */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    text-decoration: none;
+}
+
+.auth-btn {
+    width: 100%;
+    background-color: #ff4655;
+    color: white;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-btn:hover {
+    background-color: #e03c4a;
+    transform: translateY(-2px);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
+}
+
+.auth-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.auth-btn:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+/* Form Geçiş Linkleri */
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: #ece8e1;
+    font-size: 14px;
+}
+
+.auth-switch a {
+    color: #ff4655;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+    position: relative;
+}
+
+.auth-switch a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #ff4655;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+}
+
+.auth-switch a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* Form Geçiş Animasyonları */
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+    animation: formFadeIn 0.5s ease-out;
+}
+
+@keyframes formFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Valorant Temalı Ekstra Animasyonlar */
+.valorant-bullet {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: #ff4655;
+    border-radius: 50%;
+    opacity: 0;
+    z-index: -1;
+    animation: bulletTrail 3s linear infinite;
+}
+
+@keyframes bulletTrail {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(100vw, 100vh);
+        opacity: 0;
+    }
+}
+
+/* Responsive Tasarım */
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 20px;
+        margin: 0 15px;
+    }
+    
+    .auth-form h2 {
+        font-size: 24px;
+    }
+}
+
+
+.social-login {
+    margin: 20px 0;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    color: #ece8e1;
+    font-size: 14px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #2a3a4a;
+}
+
+.divider span {
+    padding: 0 10px;
+}
+
+.social-btn {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.social-btn i {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.google-btn {
+    background-color: #4285F4;
+    color: white;
+    border: 1px solid #4285F4;
+}
+
+.google-btn:hover {
+    background-color: #357ABD;
+    transform: translateY(-2px);
+}
+
+.discord-btn {
+    background-color: #5865F2;
+    color: white;
+    border: 1px solid #5865F2;
+}
+
+.discord-btn:hover {
+    background-color: #4752C4;
+    transform: translateY(-2px);
+}
+
+.social-btn:active {
+    transform: translateY(0);
+}
