@@ -140,14 +140,14 @@ body::after {
     display: block;
     margin-bottom: 8px;
     color: #ece8e1;
-    font-size: 14px;
+    font-size: 20px;
 }
 
 .form-group input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #2a3a4a;
-    border-radius: 4px;
+    width: 98%;
+    padding: 12px 4px;
+    border: 4px solid #2a3a4a;
+    border-radius: 5px;
     background-color: #0f1923;
     color: #fff;
     font-size: 16px;
@@ -378,3 +378,55 @@ body::after {
 .social-btn:active {
     transform: translateY(0);
 }
+
+/* Ekstra stiller */
+.error-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4655;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    animation: toastFadeIn 0.3s ease-out;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes toastFadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Responsive Düzenlemeler */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .auth-form h2 {
+        font-size: 22px;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+    }
+}
+/* style.css'e ekleyin */
+.success-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    animation: toastFadeIn 0.3s ease-out;
+  }

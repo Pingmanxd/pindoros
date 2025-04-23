@@ -1,305 +1,165 @@
-// script.js
-
 document.addEventListener('DOMContentLoaded', function() {
     // Elementleri seçme
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const showRegister = document.getElementById('showRegister');
-    const showLogin = document.getElementById('showLogin');
-    const closeAuth = document.querySelector('.close-auth');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    const modal = document.getElementById('authModal');
+    const elements = {
+        googleLogin: document.getElementById('googleLogin'),
+        discordLogin: document.getElementById('discordLogin'),
+        googleRegister: document.getElementById('googleRegister'),
+        discordRegister: document.getElementById('discordRegister'),
+        loginBtn: document.getElementById('loginBtn'),
+        registerBtn: document.getElementById('registerBtn'),
+        showLogin: document.getElementById('showLogin'),
+        showRegister: document.getElementById('showRegister'),
+        loginUsernameOrEmail: document.getElementById('loginUsernameOrEmail'), // Güncellendi
+        loginPassword: document.getElementById('loginPassword')
+    };
 
-    // Valorant temalı bullet animasyonları oluştur
-    function createBulletAnimations() {
-        for (let i = 0; i < 8; i++) {
-            setTimeout(() => {
-                const bullet = document.createElement('div');
-                bullet.className = 'valorant-bullet';
-                bullet.style.left = `${Math.random() * 100}%`;
-                bullet.style.top = `${Math.random() * 100}%`;
-                bullet.style.animationDuration = `${3 + Math.random() * 4}s`;
-                bullet.style.animationDelay = `${Math.random() * 2}s`;
-                document.body.appendChild(bullet);
-                
-                // Animasyon bitince bullet'ı sil
-                bullet.addEventListener('animationend', function() {
-                    bullet.remove();
-                });
-            }, i * 600);
+    // Form Geçişleri
+    elements.showLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('loginForm').classList.add('active');
+        document.getElementById('registerForm').classList.remove('active');
+    });
+
+    elements.showRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('registerForm').classList.add('active');
+        document.getElementById('loginForm').classList.remove('active');
+    });
+
+    // OAuth Fonksiyonu
+    async function handleOAuth(provider, isRegister) {
+        const button = isRegister ? elements[`${provider}Register`] : elements[`${provider}Login`];
+        const originalText = button.innerHTML;
+        
+        try {
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yönlendiriliyor...';
+            button.disabled = true;
+            
+            const response = await fetch(`http://localhost:3000/api/auth/${provider}?register=${isRegister}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            window.location.href = data.url;
+            
+        } catch (error) {
+            console.error(`${provider} Hatası:`, error);
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showError(`${provider} girişi başarısız oldu. Lütfen tekrar deneyin.`);
         }
     }
 
-    // Sayfa yüklendiğinde ve belli aralıklarla bullet animasyonu oluştur
-    createBulletAnimations();
-    setInterval(createBulletAnimations, 5000);
+    // OAuth Event Listeners
+    elements.googleLogin.addEventListener('click', (e) => handleOAuth('google', false));
+    elements.discordLogin.addEventListener('click', (e) => handleOAuth('discord', false));
+    elements.googleRegister.addEventListener('click', (e) => handleOAuth('google', true));
+    elements.discordRegister.addEventListener('click', (e) => handleOAuth('discord', true));
 
-    // Form geçişleri
-    showRegister.addEventListener('click', function(e) {
+    // Giriş Yap Butonu (GÜNCELLENDİ)
+    elements.loginBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        loginForm.classList.remove('active');
-        registerForm.classList.add('active');
-    });
+        const usernameOrEmail = elements.loginUsernameOrEmail.value.trim();
+        const password = elements.loginPassword.value;
 
-    showLogin.addEventListener('click', function(e) {
-        e.preventDefault();
-        registerForm.classList.remove('active');
-        loginForm.classList.add('active');
-    });
-
-    // Modalı kapatma
-    closeAuth.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-
-    // Dışarı tıklayınca modalı kapatma
-    window.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    // Giriş butonu işlevi
-    loginBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-        
-        if (!email || !password) {
-            showError('Lütfen tüm alanları doldurunuz!');
+        if (!usernameOrEmail || !password) {
+            showError('Lütfen kullanıcı adı/email ve şifre girin!');
             return;
         }
-        
-        // Giriş animasyonu
-        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Giriş Yapılıyor...';
-        loginBtn.disabled = true;
-        
-        // Simüle edilmiş giriş işlemi
-        setTimeout(() => {
-            loginBtn.innerHTML = '<i class="fas fa-check"></i> Giriş Başarılı!';
-            setTimeout(() => {
-                modal.style.display = 'none';
-                loginBtn.innerHTML = 'Giriş Yap';
-                loginBtn.disabled = false;
-                // Burada gerçek giriş işlemi yapılabilir
-                window.location.href ='/kasaacma/spin.html';
-                alert(`Hoş geldiniz! ${email} ile giriş yapıldı.`);
-            }, 1000);
-        }, 1500);
+
+        try {
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    usernameOrEmail, // Artık hem email hem kullanıcı adı kabul ediyor
+                    password 
+                }),
+                credentials: 'include'
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Giriş başarısız');
+            
+            showSuccess('Giriş başarılı! Yönlendiriliyorsunuz...');
+            setTimeout(() => window.location.href = '/kasaacma/spin.html', 1500);
+        } catch (error) {
+            showError(error.message.includes('Kullanıcı') 
+                ? 'Kullanıcı adı/email veya şifre hatalı!' 
+                : error.message);
+        }
     });
 
-    // Kayıt butonu işlevi
-    registerBtn.addEventListener('click', function(e) {
+    // Kayıt Ol Butonu
+    elements.registerBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        const username = document.getElementById('regUsername').value;
-        const email = document.getElementById('regEmail').value;
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value;
         const confirm = document.getElementById('regConfirm').value;
-        
-        if (!username || !email || !password || !confirm) {
-            showError('Lütfen tüm alanları doldurunuz!');
+
+        if (!username || !email || !password) {
+            showError('Lütfen tüm alanları doldurun!');
             return;
         }
-        
+
         if (password !== confirm) {
-            showError('Şifreler eşleşmiyor!');
+            showError('Şifreler eşleşmiyor');
             return;
         }
-        
-        if (password.length < 6) {
-            showError('Şifre en az 6 karakter olmalıdır!');
-            return;
+
+        try {
+            const response = await fetch('http://localhost:3000/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password }),
+                credentials: 'include'
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Kayıt başarısız');
+            
+            showSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...');
+            setTimeout(() => document.getElementById('showLogin').click(), 1500);
+        } catch (error) {
+            showError(error.message.includes('E11000') 
+                ? 'Bu kullanıcı adı/email zaten kullanımda!' 
+                : error.message);
         }
-        
-        // Kayıt animasyonu
-        registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kayıt Olunuyor...';
-        registerBtn.disabled = true;
-        
-        // Simüle edilmiş kayıt işlemi
-        setTimeout(() => {
-            registerBtn.innerHTML = '<i class="fas fa-check"></i> Kayıt Başarılı!';
-            setTimeout(() => {
-                registerForm.classList.remove('active');
-                loginForm.classList.add('active');
-                registerBtn.innerHTML = 'Kayıt Ol';
-                registerBtn.disabled = false;
-                
-                // Formları temizle
-                document.getElementById('regUsername').value = '';
-                document.getElementById('regEmail').value = '';
-                document.getElementById('regPassword').value = '';
-                document.getElementById('regConfirm').value = '';
-                
-                // Kullanıcıyı bilgilendir
-                document.getElementById('loginEmail').value = email;
-                showSuccess(`${username} kullanıcı adıyla kayıt başarılı! Giriş yapabilirsiniz.`);
-            }, 1000);
-        }, 1500);
     });
 
-    // Hata mesajı gösterme fonksiyonu
+    // Toast Mesajları
     function showError(message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-        errorDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #ff4655;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(255, 70, 85, 0.3);
-            z-index: 1001;
-            animation: slideIn 0.3s ease-out;
-        `;
-        
-        document.body.appendChild(errorDiv);
-        
-        setTimeout(() => {
-            errorDiv.style.animation = 'fadeOut 0.3s ease-out';
-            setTimeout(() => {
-                errorDiv.remove();
-            }, 300);
-        }, 3000);
+        const toast = document.createElement('div');
+        toast.className = 'error-toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
     }
 
-    // Başarı mesajı gösterme fonksiyonu
     function showSuccess(message) {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-        successDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #2ecc71;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
-            z-index: 1001;
-            animation: slideIn 0.3s ease-out;
-        `;
-        
-        document.body.appendChild(successDiv);
-        
-        setTimeout(() => {
-            successDiv.style.animation = 'fadeOut 0.3s ease-out';
-            setTimeout(() => {
-                successDiv.remove();
-            }, 300);
-        }, 3000);
+        const toast = document.createElement('div');
+        toast.className = 'success-toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
     }
 
-    // CSS animasyonları için style ekleme
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from { top: -50px; opacity: 0; }
-            to { top: 20px; opacity: 1; }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        .error-message i, .success-message i {
-            margin-right: 8px;
-        }
-    `;
-    document.head.appendChild(style);
+    // URL'deki hata mesajlarını kontrol et
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('auth')) {
+        const errorType = urlParams.get('auth');
+        if (errorType === 'google_failed') showError('Google girişi başarısız oldu');
+        else if (errorType === 'discord_failed') showError('Discord girişi başarısız oldu');
+    }
 });
-
-    // Sosyal giriş butonları
-    const googleLogin = document.getElementById('googleLogin');
-    const discordLogin = document.getElementById('discordLogin');
-    const googleRegister = document.getElementById('googleRegister');
-    const discordRegister = document.getElementById('discordRegister');
-
-    // ... diğer fonksiyonlar aynı ...
-
-    // Modalı kapatma
-    closeAuth.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-
-    // Dışarı tıklayınca modalı kapatma
-    window.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    // Google giriş işlevi
-    googleLogin.addEventListener('click', function(e) {
-        e.preventDefault();
-        googleLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Google ile giriş yapılıyor...';
-        googleLogin.disabled = true;
-        
-        setTimeout(() => {
-            showSuccess('Google ile giriş başarılı!');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                googleLogin.innerHTML = '<i class="fab fa-google"></i> Google ile Giriş Yap';
-                googleLogin.disabled = false;
-                window.location.href = '/kasaacma/spin.html';
-            }, 1000);
-        }, 1500);
-    });
-
-    // Discord giriş işlevi
-    discordLogin.addEventListener('click', function(e) {
-        e.preventDefault();
-        discordLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Discord ile giriş yapılıyor...';
-        discordLogin.disabled = true;
-        
-        setTimeout(() => {
-            showSuccess('Discord ile giriş başarılı!');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                discordLogin.innerHTML = '<i class="fab fa-discord"></i> Discord ile Giriş Yap';
-                discordLogin.disabled = false;
-                window.location.href = '/kasaacma/spin.html';
-            }, 1000);
-        }, 1500);
-    });
-
-    // Google kayıt işlevi
-    googleRegister.addEventListener('click', function(e) {
-        e.preventDefault();
-        googleRegister.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Google ile kayıt olunuyor...';
-        googleRegister.disabled = true;
-        
-        setTimeout(() => {
-            showSuccess('Google ile kayıt başarılı!');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                googleRegister.innerHTML = '<i class="fab fa-google"></i> Google ile Kayıt Ol';
-                googleRegister.disabled = false;
-                window.location.href = '/kasaacma/spin.html';
-            }, 1000);
-        }, 1500);
-    });
-
-    // Discord kayıt işlevi
-    discordRegister.addEventListener('click', function(e) {
-        e.preventDefault();
-        discordRegister.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Discord ile kayıt olunuyor...';
-        discordRegister.disabled = true;
-        
-        setTimeout(() => {
-            showSuccess('Discord ile kayıt başarılı!');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                discordRegister.innerHTML = '<i class="fab fa-discord"></i> Discord ile Kayıt Ol';
-                discordRegister.disabled = false;
-                window.location.href = '/kasaacma/spin.html';
-            }, 1000);
-        }, 1500);
-    });
-
-    // ... diğer kodlar aynı ...
+if (window.location.search.includes('discord_success')) {
+    window.location.href = '/kasaacma/spin.html'; // Yönlendirme
+  }

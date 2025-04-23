@@ -48,7 +48,7 @@ body::after {
     transform: translate(-50%, -50%);
     width: 600px;
     height: 600px;
-    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/1200px-Valorant_logo_-_pink_color_version.svg.png') no-repeat center center;
+    background: url('KASA.png') no-repeat center center;
     background-size: contain;
     opacity: 0.03;
     z-index: -1;
