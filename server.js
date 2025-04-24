@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '/var/www/Pingmanxd.env' });
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
@@ -26,7 +26,7 @@ const User = mongoose.model('User', new mongoose.Schema({
 
 // Middleware'ler
 app.use(cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
+    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://your-frontend-url'],
     credentials: true
 }));
 app.use(express.json());
@@ -148,3 +148,4 @@ app.get('/auth/discord/callback',
 // Sunucuyu Başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Sunucu http://localhost:${PORT} üzerinde çalışıyor`));
+console.log("Uygulama başladı!");
